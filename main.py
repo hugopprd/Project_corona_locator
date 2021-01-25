@@ -8,6 +8,7 @@ import os
 import requests
 import zipfile
 import geopandas as gpd
+import pandas as pd
 
 # 1. create folders
 if not os.path.exists('data'): os.mkdir('data')
@@ -21,7 +22,6 @@ path_cbs_zip = './data/municipality.zip'
 mun_loc = './data/gemeente_2020_v1.shp'
 cbs_loc = './data/corona.csv'
 
-
 if not os.path.exists(path_cbs_zip):
     with requests.get(url_cbs)as r:
         print('Downloading...')
@@ -34,12 +34,18 @@ with requests.get(url_rivm) as r:
 
 # 3. load municipalities as GeoDataFrame
 munGDF = gpd.read_file(mun_loc)
+cbsDF = pd.read_csv(cbs_loc, sep=';')
 
-# 4. Normalize cases relative to population (csv)
+tempDF = cbsDF.groupby(['Municipality_code']).sum()
 
-# 5. Calculate average cases/deaths for the last week for each day. (csv)
+# 4. Calculate average cases/deaths for the last week for each day. (csv)
+#for mun in municipalities:
+    
+#for day in days[7:]:
 
-# 6. Add csv coronacases to municipality geo-data
+# 5. Add csv coronacases to municipality geo-data
+        
+# 6. normalize coronacases for inhabitants
 
 # 7. Rasterize and animate
 
