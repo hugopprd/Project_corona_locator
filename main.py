@@ -34,8 +34,8 @@ with requests.get(url_rivm) as r:
     open(cbs_loc, 'wb').write(r.content)  
     
 # 3. load municipalities as GeoDataFrame
-munGDF = gpd.read_file(municipality_data)
-cbsDF = pd.read_csv(corona_data, sep=';')
+munGDF = gpd.read_file(mun_loc)
+cbsDF = pd.read_csv(cbs_loc, sep=';')
 
 tempDF = cbsDF.groupby(['Municipality_code']).sum()
 
