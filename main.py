@@ -43,7 +43,7 @@ tempDF = cbsDF.groupby(['Municipality_code']).sum()
 from functions import DataPreProcessing
 
 #calling function DataPreProcessing function and store it in a variable
-data = DataPreProcessing(munGDF, cbsDF)
+data = DataPreProcessing(munGDF, tempDF)
 
 # 4. Calculate average cases/deaths for the last week for each day. (csv)
 #for mun in municipalities:
