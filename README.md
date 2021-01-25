@@ -19,8 +19,7 @@ Showing the development of relative coronacases per inhabitant (normalization) i
 
 ## Method
 **Packages**
-- raster
-- sf
+
 
 **Steps**
 - create folders (data, output)
