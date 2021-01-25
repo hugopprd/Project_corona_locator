@@ -33,10 +33,17 @@ if not os.path.exists(path_cbs_zip):
 with requests.get(url_rivm) as r:
     open(cbs_loc, 'wb').write(r.content)  
     
+# 3. load municipalities as GeoDataFrame
+munGDF = gpd.read_file(municipality_data)
+cbsDF = pd.read_csv(corona_data, sep=';')
+
+tempDF = cbsDF.groupby(['Municipality_code']).sum()
+
+
 from functions import DataPreProcessing
 
 #calling function DataPreProcessing function and store it in a variable
-data = DataPreProcessing(mun_loc, cbs_loc)
+data = DataPreProcessing(munGDF, cbsDF)
 
 # 4. Calculate average cases/deaths for the last week for each day. (csv)
 #for mun in municipalities:
