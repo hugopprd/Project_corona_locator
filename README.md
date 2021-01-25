@@ -26,7 +26,11 @@ Showing the development of relative coronacases per inhabitant (normalization) i
 - create folders (data, output)
 - download data and store in datafolder
 - transform data to be in the same crs (RD New)
+- calculate average coronacases/death for the last week per day.
 - add coronacase data to shapefile (~300 columns of each day corona cases)
 - add corona death data to shapefile as a seperate file (no priority)
 - normalize cases for inhabitants
 - visualization
+- animation from march to now in a raster
+- graph from march to now
+- city ranking animation.
