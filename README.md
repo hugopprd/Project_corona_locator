@@ -14,12 +14,18 @@ Showing the development of relative coronacases per inhabitant (normalization) i
 - File download link: https://data.rivm.nl/covid-19/COVID-19_aantallen_gemeente_per_dag.csv
 
 **Municipality shapefile**
-- File location: sf::getData GADM library
+- File location: CBS Buurten 2020
 - Metadata: this file contains the municipality boundaries.
 
 ## Method
 **Packages**
-
+- os
+- requests
+- zipfile 
+- geopandas
+- pandas
+- leaflet
+- ggplot2
 
 **Steps**
 - create folders (data, output)
