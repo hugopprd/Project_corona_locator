@@ -47,6 +47,7 @@ MunCorGDF = funcs.DataPreProcessing(munGDF, corDF)
         
 # 6. normalize coronacases for inhabitants
 MunCorGDF = MunCorGDF.loc[:,'2020-03-05_sum':].div(MunCorGDF['AANT_INW'], axis=0) * 100
+MunCorGDF.columns = MunCorGDF.columns.str.replace('_sum','')
 
 # 7. Rasterize and animate
 
