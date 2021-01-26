@@ -9,6 +9,7 @@ import requests
 import zipfile
 import geopandas as gpd
 import pandas as pd
+import bar_chart_race as bcr
 import functions as funcs
 
 # 1. create folders
@@ -36,6 +37,7 @@ with requests.get(url_rivm) as r:
 # 3. load municipalities as GeoDataFrame
 munGDF = gpd.read_file(mun_loc)
 cbsDF = pd.read_csv(cbs_loc, sep=';')
+#cbsDF.astype({'Date_of_publication': 'datetime64[ns]'}).dtypes
 
 # 4. Calculate average cases/deaths for the last week for each day. (csv)
 corDF = funcs.CombineMunCbs(munGDF, cbsDF)
@@ -44,7 +46,7 @@ corDF = funcs.CombineMunCbs(munGDF, cbsDF)
 MunCorGDF = funcs.DataPreProcessing(munGDF, corDF)
         
 # 6. normalize coronacases for inhabitants
-MunCorGDF = MunCorGDF.loc[:,'c2020-03-05':].div(MunCorGDF['AANT_INW'], axis=0) * 100
+MunCorGDF = MunCorGDF.loc[:,'2020-03-05_sum':].div(MunCorGDF['AANT_INW'], axis=0) * 100
 
 # 7. Rasterize and animate
 
@@ -52,3 +54,4 @@ MunCorGDF = MunCorGDF.loc[:,'c2020-03-05':].div(MunCorGDF['AANT_INW'], axis=0) *
 # 8. City ranking 
 # https://www.youtube.com/watch?v=qThD1InmsuI
 # https://github.com/dexplo/bar_chart_race
+MunCorGDF_t = MunCorGDF.T

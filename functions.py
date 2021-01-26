@@ -11,17 +11,21 @@ def CombineMunCbs (munGDF, cbsDF):
     tempDF.reset_index(drop=True, inplace=True)
     tempDF = pd.DataFrame(tempDF['Municipality_code'])
 
-    
     days = cbsDF['Date_of_publication'].unique().tolist()
 
     for day in days:
         dayDF = cbsDF[cbsDF['Date_of_publication'] == day]
-        dayDF = dayDF.rename(columns={'Total_reported': 'c'})
+        dayDF = dayDF.rename(columns={'Total_reported': ''})
         dayDF.reset_index(drop=True, inplace=True)
-        dayDF = dayDF['c']
+        dayDF = dayDF['']
         tempDF = tempDF.join(dayDF, rsuffix=day)
 
-    corDF = tempDF.drop(columns=['c'])
+    corDF = tempDF.drop(columns=[''])
+    
+    for day in days[7:]:
+        index = days.index(day)
+        corDF[day + '_sum'] = (corDF.iloc[:, index-7:index].sum(axis=1)) / 7
+    
     return corDF
     
 def DataPreProcessing(municipality_data, corona_data):
