@@ -9,7 +9,7 @@ import requests
 import zipfile
 import geopandas as gpd
 import pandas as pd
-import numpy as np
+import functions as funcs
 
 # 1. create folders
 if not os.path.exists('data'): os.mkdir('data')
@@ -29,28 +29,19 @@ if not os.path.exists(path_cbs_zip):
         open(path_cbs_zip, 'wb').write(r.content)
         with zipfile.ZipFile(path_cbs_zip, 'r') as z:
             z.extractall('./data/')
-
+    
 with requests.get(url_rivm) as r:
     open(cbs_loc, 'wb').write(r.content)  
-    
+
 # 3. load municipalities as GeoDataFrame
 munGDF = gpd.read_file(mun_loc)
 cbsDF = pd.read_csv(cbs_loc, sep=';')
 
-tempDF = cbsDF.groupby(['Municipality_code']).sum()
-
-
-from functions import DataPreProcessing
-
-#calling function DataPreProcessing function and store it in a variable
-data = DataPreProcessing(munGDF, tempDF)
-
 # 4. Calculate average cases/deaths for the last week for each day. (csv)
-#for mun in municipalities:
-    
-#for day in days[7:]:
+corDF = funcs.CombineMunCbs(munGDF, cbsDF)
 
-# 5. Add csv coronacases to municipality geo-data
+# 5. Add csv coronacases to municipality geo-data using DataPreProcessing
+MunCorGDF = funcs.DataPreProcessing(munGDF, corDF)
         
 # 6. normalize coronacases for inhabitants
 

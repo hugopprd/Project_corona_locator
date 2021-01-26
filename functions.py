@@ -4,11 +4,29 @@
 # Final Project
 # Date: 29-01-2021
 
-
-
-def DataPreProcessing(municipality_data, corona_data):
-    import geopandas as gpd
+def CombineMunCbs (munGDF, cbsDF):
     import pandas as pd
+    tempDF = cbsDF.groupby(['Municipality_code']).sum()
+    tempDF['Municipality_code'] = tempDF.index
+    tempDF.reset_index(drop=True, inplace=True)
+    tempDF = pd.DataFrame(tempDF['Municipality_code'])
+
+    
+    days = cbsDF['Date_of_publication'].unique().tolist()
+
+    for day in days:
+        dayDF = cbsDF[cbsDF['Date_of_publication'] == day]
+        dayDF = dayDF.rename(columns={'Total_reported': 'c'})
+        dayDF.reset_index(drop=True, inplace=True)
+        dayDF = dayDF['c']
+        tempDF = tempDF.join(dayDF, rsuffix=day)
+
+    corDF = tempDF.drop(columns=['c'])
+    return corDF
+    
+def DataPreProcessing(municipality_data, corona_data):
+    import pandas as pd
+    import geopandas as gpd
     # dropping water areas
     munGDF_upd = municipality_data[municipality_data["H2O"] == "NEE"]
 
@@ -17,7 +35,8 @@ def DataPreProcessing(municipality_data, corona_data):
 
     #set index
     Preprocessed_data = mergedf.set_index(["GM_CODE"])
+    MunCorGDF = gpd.GeoDataFrame(Preprocessed_data)
 
     #save file as csv
-    Preprocessed_data.to_csv(r'./data/coronapermun.csv')   
-    return Preprocessed_data
+    MunCorGDF.to_csv(r'./data/coronapermun.csv')   
+    return MunCorGDF
