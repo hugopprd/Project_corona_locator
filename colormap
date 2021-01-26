@@ -1,4 +1,0 @@
-colormap = branca.colormap.linear.YlOrRd_09.scale(0, 8500)
-colormap = colormap.to_step(index=[0, 1000, 3000, 5000, 8500])
-colormap.caption = 'Incidents of Crime in Victoria (year ending June 2018)'
-colormap.add_to(world_map)
