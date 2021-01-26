@@ -9,7 +9,7 @@ import requests
 import zipfile
 import geopandas as gpd
 import pandas as pd
-import bar_chart_race as bcr
+#import bar_chart_race as bcr
 import functions as funcs
 
 # 1. create folders
@@ -44,24 +44,14 @@ corDF = funcs.CombineMunCbs(munGDF, cbsDF)
 
 # 5. Add csv coronacases to municipality geo-data using DataPreProcessing
 MunCorGDF = funcs.DataPreProcessing(munGDF, corDF)
-        
+
 # 6. normalize coronacases for inhabitants
-MunCorGDF_normalize = MunCorGDF.loc[:,'c2020-03-05':].div(MunCorGDF['AANT_INW'], axis=0) * 100
+MunCorGDF_normalize = MunCorGDF.loc[:,'2020-03-05_sum':].div(MunCorGDF['AANT_INW'], axis=0) * 100
 MunCorGDF_normalize.columns = MunCorGDF_normalize.columns.str.replace('_sum','')
 #add the usefull data to table
 MunCorGDF_ready = MunCorGDF_normalize.join(MunCorGDF.iloc[:, 0: 30], rsuffix='j')
-
-# 7. Rasterize and animate
-gjson = MunCorGDF_ready.to_crs(epsg='4326').to_json()
-
-import folium
-mapa = folium.Map([52.2130, 5.2794],
-                  zoom_start=9,
-                  tiles='cartodbpositron')
-points = folium.features.GeoJson(gjson)
-
-mapa.add_child(points)
-mapa.save('./output/coronamap.html')
+# 7. Visualize
+funcs.Visualization(MunCorGDF_ready)
 
 # 8. City ranking 
 # https://www.youtube.com/watch?v=qThD1InmsuI
