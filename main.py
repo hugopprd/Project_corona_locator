@@ -44,7 +44,14 @@ corDF = funcs.CombineMunCbs(munGDF, cbsDF)
 MunCorGDF = funcs.DataPreProcessing(munGDF, corDF)
         
 # 6. normalize coronacases for inhabitants
+MunCorGDF_inhabitant = MunCorGDF['AANT_INW']
 
+def multiply_by_2(MunCorGDF, MunCorGDF_inhabitant): 
+    return (MunCorGDF_inhabitant / MunCorGDF) * 100
+MunCorGDF_cases = MunCorGDF.columns[31:]
+
+# executing the function 
+zizi = MunCorGDF_cases.apply(multiply_by_2) 
 # 7. Rasterize and animate
 
 # 8. City ranking 
