@@ -29,14 +29,13 @@ def DataPreProcessing(municipality_data, corona_data):
     import geopandas as gpd
     # dropping water areas
     munGDF_upd = municipality_data[municipality_data["H2O"] == "NEE"]
-
     #join table
     mergedf = pd.merge(munGDF_upd, corona_data, left_on = 'GM_CODE', right_on = 'Municipality_code')
-
     #set index
     Preprocessed_data = mergedf.set_index(["GM_CODE"])
     MunCorGDF = gpd.GeoDataFrame(Preprocessed_data)
-
+    #get rid of the useless columns
+    MunCorGDF = MunCorGDF.drop(columns=['JRSTATCODE', 'H2O', 'OPP_WATER', 'OAD', 'STED', 'BEV_DICHTH'])
     #save file as csv
     MunCorGDF.to_csv(r'./data/coronapermun.csv')   
     return MunCorGDF
