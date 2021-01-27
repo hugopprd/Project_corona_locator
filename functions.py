@@ -87,8 +87,20 @@ def Visualization(MunCorGDF_normalized):
             control=False,
             highlight_function=highlight_function, 
             tooltip=folium.features.GeoJsonTooltip(
-                    fields=['GM_NAAM', last_date],
-                    aliases=['Municipality: ', 'Number of new corona cases per 100.000 in the last 24h'],
+                  fields=['GM_NAAM', 
+                            last_date, 
+                            'P_00_14_JR', 
+                            'P_15_24_JR', 
+                            'P_25_44_JR',  
+                            'P_45_64_JR', 
+                            'P_65_EO_JR'],
+                    aliases=['Municipality: ', 
+                             'Number of new corona cases per 1000 inhabitants in the last 24h', 
+                             '% of 0yo to 14yo', 
+                             '% of 15yo to 24yo', 
+                             '% of 25yo to 44yo', 
+                             '% of 45yo to 64yo', 
+                             '% of 65yo and plus'],
                     style=("background-color: white; color: #333333; font-family: arial; font-size: 12px; padding: 10px;") 
                     )
             )
