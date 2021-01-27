@@ -55,7 +55,100 @@ corDF_normalized = MunCorGDF.loc[:, '2020-03-05':].div(MunCorGDF['AANT_INW'], ax
 #add the usefull data to table
 MunCorGDF_normalized = MunCorGDF.loc[:, :'geometry'].join(corDF_normalized)
 funcs.Visualization(MunCorGDF_normalized)
+#####gifmap
 
+#bonus step
+#create a gif that shows evolution of corona cases through a map
+# Drop on-line courses
+import os
+import shutil
+import time
+
+import folium
+import imageio
+import webbrowser
+import zipfile
+import json
+import fileinput
+
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+from os import path
+from branca.colormap import linear
+#from selenium import webdriver
+from PIL import Image
+from pathlib import Path
+# Keeping only 'CO_MUNICIPIO' and 'DT_INICIO_FUNCIONAMENTO'
+last_date = MunCorGDF_ready.columns[-31]
+MunCorGDF_gifmap = MunCorGDF_ready.loc[:, '2020-03-05': last_date]
+MunCorGDF_gifmap = MunCorGDF_gifmap.join(MunCorGDF_ready.iloc[:, -1], rsuffix='j')
+# Creating new var with foundation year for each course
+# Checking nan values
+
+sns.heatmap(MunCorGDF_gifmap.isnull(), 
+            yticklabels=False, 
+            cbar=False, 
+            cmap='viridis'
+           )
+
+# Dropping nan values 
+
+MunCorGDF_gifmap.dropna(inplace=True)
+
+# Float to Int
+
+MunCorGDF_gifmap = MunCorGDF_gifmap.astype(int)
+MunCorGDF_gifmap_json = MunCorGDF_gifmap.to_json()
+
+for i in range(1808,2019,10):
+    
+    # Gen a new df with total courses in each decade per municipality. This df is transformed into a dict
+    total_perYear = courses[courses['FOUNDATION_YEAR'] <= i]
+    total_perYear.drop('FOUNDATION_YEAR', axis=1, inplace=True)
+    total_perYear['COUNT'] = 1
+    total_perYear['CO_MUNICIPIO'] = total_perYear['CO_MUNICIPIO'].astype(str)   
+    total_perYear = total_perYear.groupby('CO_MUNICIPIO')['COUNT'].sum()
+    total_perYear = np.log(total_perYear) + 1
+    total_perYear = total_perYear.to_dict()
+    
+    # Add municipalities keys with 0 courses at the giving year
+    for j in cd_municipios:
+        if j in  total_perYear.keys():
+            continue
+        else: 
+             total_perYear[str(j)] = 0
+    
+    # Create a folium map centered in Brazil
+    m_i = folium.Map(width=500, height=500,
+               location=[-15.77972, -54.92972], 
+               zoom_start=4,
+               tiles='cartodbpositron')
+    
+    # Add year label to the map
+    title_html = '''
+                 <h3 align="left" style="font-size:22px"><b>{}</b></h3>
+                 '''.format('Year: ' + str(i))   
+    m_i.get_root().html.add_child(folium.Element(title_html))
+    
+    # Plot colors to the map using json geographical borders, and total courses from total_perYear dict
+    folium.GeoJson(
+        geo_json_data,
+        style_function=lambda feature: {
+            'fillColor': colormap(total_perYear[feature['properties']['id']]),
+            'color': 'darkred',
+            'weight': 0.5,
+            'lineColor': 'white',
+            'stroke' : False
+        } 
+    ).add_to(m_i)
+
+    
+    m_i.save('GifMap/total_perYear_' + str(i) + '.html')
+    
+    
 # 8. City ranking 
 # https://www.youtube.com/watch?v=qThD1InmsuI
 # https://github.com/dexplo/bar_chart_race
