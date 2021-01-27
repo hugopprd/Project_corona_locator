@@ -95,7 +95,7 @@ def Visualization(MunCorGDF_normalized):
                             'P_45_64_JR', 
                             'P_65_EO_JR'],
                     aliases=['Municipality: ', 
-                             'Number of new corona cases per 1000 inhabitants in the last 24h', 
+                             'Number of new corona cases per 100.000 inhabitants in the last 24h', 
                              '% of 0yo to 14yo', 
                              '% of 15yo to 24yo', 
                              '% of 25yo to 44yo', 
