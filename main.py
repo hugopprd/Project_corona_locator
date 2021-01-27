@@ -11,6 +11,7 @@ import geopandas as gpd
 import pandas as pd
 import bar_chart_race as bcr
 import functions as funcs
+import imageio
 
 # 1. create folders
 if not os.path.exists('data'): os.mkdir('data')
@@ -60,7 +61,7 @@ funcs.Visualization(MunCorGDF_ready)
 df = MunCorGDF_normalize.T
 df = df.rename_axis(None,axis=1).rename_axis('date')
 df = df.cumsum().astype(int)
-#df = df.iloc[::7, :]
+#df = df.iloc[:, :-31:7]
 #df = df.iloc[:, 0:40]
 
 file_loc = './data/corona.csv'
