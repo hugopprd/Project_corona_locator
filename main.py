@@ -12,9 +12,7 @@ import requests
 import zipfile
 import geopandas as gpd
 import pandas as pd
-import bar_chart_race as bcr
 import functions as funcs
-import imageio
 
 # 1. create folders
 if not os.path.exists('data'): os.mkdir('data')
@@ -55,7 +53,6 @@ corDF_normalized = MunCorGDF.loc[:, '2020-03-05':].div(MunCorGDF['AANT_INW'], ax
 #add the usefull data to table
 MunCorGDF_normalized = MunCorGDF.loc[:, :'geometry'].join(corDF_normalized)
 funcs.Visualization(MunCorGDF_normalized)
-#####gifmap
 
 #bonus step
 #create a gif that shows evolution of corona cases through a map
@@ -147,52 +144,8 @@ for i in range(1808,2019,10):
 
     
     m_i.save('GifMap/total_perYear_' + str(i) + '.html')
-    
-    
+
 # 8. City ranking 
 # https://www.youtube.com/watch?v=qThD1InmsuI
 # https://github.com/dexplo/bar_chart_race
-df = corDF_normalized.join(MunCorGDF['GM_NAAM'])
-df.set_index('GM_NAAM', inplace=True)
-df = df.T
-df = df.rename_axis(None,axis=1).rename_axis('date')
-df = df.cumsum().astype(int)
-df = df.iloc[:, :-1]
-
-bcr.bar_chart_race(df=df,
-                          filename='./output/bar_chart_race.mp4',
-                          n_bars=10,
-                          #steps_per_period=7,
-                          #period_length=500,
-                          interpolate_period=False)
-
-'''
-bcr.bar_chart_race(
-    df=df,
-    filename='./data/test.gif',
-    orientation='h',
-    sort='desc',
-    n_bars=10,
-    fixed_order=False,
-    fixed_max=False,
-    steps_per_period=10,
-    interpolate_period=False,
-    label_bars=True,
-    bar_size=.95,
-    period_label={'x': .99, 'y': .25, 'ha': 'right', 'va': 'center'},
-    period_fmt='%B %d, %Y',
-    period_length=500,
-    figsize=(20, 20),
-    dpi=144,
-    cmap='dark12',
-    title='COVID-19 Cases by Municipality',
-    title_size='',
-    bar_label_size=7,
-    tick_label_size=7,
-    shared_fontdict={'family' : 'Helvetica', 'color' : '.1'},
-    scale='linear',
-    writer=None,
-    fig=None,
-    bar_kwargs={'alpha': .7},
-    filter_column_colors=False)  
-'''
+funcs.MakeBarChart(corDF_normalized, MunCorGDF)

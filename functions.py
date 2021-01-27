@@ -111,3 +111,26 @@ def Visualization(MunCorGDF_normalized):
     #save map
     coronamap.save('./output/CoronaMap.html')
     print('Map saved in output folder bro')
+    
+def MakeBarChart(corDF_normalized, MunCorGDF):
+    import bar_chart_race as bcr
+    df = corDF_normalized.join(MunCorGDF['GM_NAAM'])
+    df.set_index('GM_NAAM', inplace=True)
+    df = df.T
+    df = df.rename_axis(None,axis=1).rename_axis('date')
+    df = df.cumsum().astype(int)
+    df = df.iloc[:, :-1]
+
+    bcr.bar_chart_race(df=df,
+                          filename='./output/bar_chart_race.mp4',
+                          n_bars=20,
+                          #steps_per_period=7,
+                          #period_length=500,
+                          interpolate_period=False,
+                          #sort='asc',
+                          title='Total COVID-19 Cases per 100.000 Inhabitants',
+                          period_fmt='%B %d, %Y',
+                          period_summary_func=lambda v, r: {'x': .99, 'y': .18,
+                                      's': f'Total: {v.nlargest(6).sum():,.0f}',
+                                      'ha': 'right', 'size': 8, 'family': 'Courier New'}
+                          )
