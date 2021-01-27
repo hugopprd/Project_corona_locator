@@ -5,6 +5,9 @@
 # Date: 29-01-2021
 
 import os
+import sys
+#os.chdir(sys.path[0]+r'/Project')
+#print(os.getcwd())
 import requests
 import zipfile
 import geopandas as gpd
@@ -46,37 +49,28 @@ corDF = funcs.CombineMunCbs(munGDF, cbsDF)
 MunCorGDF = funcs.DataPreProcessing(munGDF, corDF)
         
 # 6. normalize coronacases for inhabitants
-MunCorGDF_normalize = MunCorGDF.loc[:,'2020-03-05_sum':].div(MunCorGDF['AANT_INW'], axis=0) * 100000
-MunCorGDF_normalize.columns = MunCorGDF_normalize.columns.str.replace('_sum','')
-
-#add the usefull data to table
-MunCorGDF_ready = MunCorGDF_normalize.join(MunCorGDF.iloc[:, 0: 30], rsuffix='j')
+corDF_normalized = MunCorGDF.loc[:, '2020-03-05':].div(MunCorGDF['AANT_INW'], axis=0) * 100000
 
 # 7. Visualize
-funcs.Visualization(MunCorGDF_ready)
+#add the usefull data to table
+MunCorGDF_normalized = MunCorGDF.loc[:, :'geometry'].join(corDF_normalized)
+funcs.Visualization(MunCorGDF_normalized)
 
 # 8. City ranking 
 # https://www.youtube.com/watch?v=qThD1InmsuI
 # https://github.com/dexplo/bar_chart_race
-df = MunCorGDF_normalize.T
+df = corDF_normalized.join(MunCorGDF['GM_NAAM'])
+df.set_index('GM_NAAM', inplace=True)
+df = df.T
 df = df.rename_axis(None,axis=1).rename_axis('date')
 df = df.cumsum().astype(int)
-#df = df.iloc[:, :-31:7]
-#df = df.iloc[:, 0:40]
+df = df.iloc[:, :-1]
 
-file_loc = './data/corona.csv'
-
-df.to_csv(file_loc, index=True)
-index_col = 'date'
-parse_dates = [index_col] if index_col else None
-df3 = pd.read_csv(file_loc, index_col=index_col, parse_dates=parse_dates)
-
-
-test = bcr.bar_chart_race(df=df3,
+bcr.bar_chart_race(df=df,
                           filename='./output/bar_chart_race.mp4',
                           n_bars=10,
-                          steps_per_period=7,
-                          period_length=500,
+                          #steps_per_period=7,
+                          #period_length=500,
                           interpolate_period=False)
 
 '''

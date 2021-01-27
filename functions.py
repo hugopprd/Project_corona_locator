@@ -5,18 +5,20 @@
 # Date: 29-01-2021
 
 def CombineMunCbs (munGDF, cbsDF):
-    import pandas as pd
     tempDF = cbsDF.groupby(['Municipality_code']).sum()
     tempDF['Municipality_code'] = tempDF.index
-    tempDF.reset_index(drop=True, inplace=True)
-    tempDF = pd.DataFrame(tempDF['Municipality_code'])
+    tempDF = tempDF.drop(columns=['Total_reported', 'Hospital_admission', 'Deceased'])
+    
+    #tempDF.reset_index(drop=True, inplace=True)
+    #tempDF = pd.DataFrame(tempDF['Municipality_code'])
 
     days = cbsDF['Date_of_publication'].unique().tolist()
 
     for day in days:
         dayDF = cbsDF[cbsDF['Date_of_publication'] == day]
+        dayDF.set_index('Municipality_code', inplace=True)
+        dayDF = dayDF.groupby(dayDF.index).sum()
         dayDF = dayDF.rename(columns={'Total_reported': ''})
-        dayDF.reset_index(drop=True, inplace=True)
         dayDF = dayDF['']
         tempDF = tempDF.join(dayDF, rsuffix=day)
 
@@ -25,6 +27,10 @@ def CombineMunCbs (munGDF, cbsDF):
     for day in days[7:]:
         index = days.index(day)
         corDF[day + '_sum'] = (corDF.iloc[:, index-7:index].sum(axis=1)) / 7
+        
+    corDF = corDF.drop(columns=['Municipality_code'])
+    corDF = corDF.loc[:,'2020-03-05_sum':]
+    corDF.columns = corDF.columns.str.replace('_sum','')
     
     return corDF
     
@@ -44,17 +50,17 @@ def DataPreProcessing(municipality_data, corona_data):
     MunCorGDF.to_csv(r'./data/coronapermun.csv')   
     return MunCorGDF
 
-def Visualization(MunCorGDF_ready):
+def Visualization(MunCorGDF_normalized):
     import folium
     #create map
     coronamap = folium.Map([52.2130, 5.2794],
                  zoom_start=8,
                  tiles='cartodbpositron')
     # folium.TileLayer('openstreetmap',name="Light Map",control=False).add_to(coronamap)
-    municipality_bord = MunCorGDF_ready.to_crs(epsg='4326')
+    municipality_bord = MunCorGDF_normalized.to_crs(epsg='4326')
 
     # get the name of the last updated
-    last_date = MunCorGDF_ready.columns[-31]
+    last_date = MunCorGDF_normalized.columns[-1]
 
     #setting a measurement scale and create a layer
     scale = (municipality_bord[last_date].quantile((0,0.25,0.75,1))).tolist()
@@ -64,7 +70,7 @@ def Visualization(MunCorGDF_ready):
                      fill_color = 'YlOrRd',
                      threshold_scale=scale, 
                      fill_opacity=0.7,
-                     line_opacity=0.2, legend_name='Percentage of corona cases')
+                     line_opacity=0.2, legend_name='Number of new corona cases per 100.000 in the last 24h')
 
     #create a highlight function
     style_function = lambda x: {'fillColor': '#ffffff', 
@@ -82,7 +88,7 @@ def Visualization(MunCorGDF_ready):
             highlight_function=highlight_function, 
             tooltip=folium.features.GeoJsonTooltip(
                     fields=['GM_NAAM', last_date],
-                    aliases=['Municipality: ', 'Percentage of corona cases per inhabitant in the last 24h'],
+                    aliases=['Municipality: ', 'Number of new corona cases per 100.000 in the last 24h'],
                     style=("background-color: white; color: #333333; font-family: arial; font-size: 12px; padding: 10px;") 
                     )
             )
