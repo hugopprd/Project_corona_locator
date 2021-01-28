@@ -1,6 +1,6 @@
 # Geoscripting project repository.
 Geoscripting 2020 
-- Title: Corona Locator
+- Title: Corona Locator & Development
 - Team: Baguette (Hugo Poupard & Jochem 't Hart)
 - Date: 15-01-2021
 
