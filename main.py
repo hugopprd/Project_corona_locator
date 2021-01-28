@@ -3,17 +3,14 @@
 # Team: Baguette (Hugo Poupard & Jochem 't Hart)
 # Final Project
 # Date: 29-01-2021
+# ---RUN THIS PROJECT THROUGH MAIN.SH---
 
 import os
-import sys
-if sys.path[0] == "/home/WUR/hart014":
-    os.chdir(sys.path[0]+r'/Project_Starter-Baguette-master/')
-print(os.getcwd())
 import requests
 import zipfile
 import geopandas as gpd
 import pandas as pd
-# We prefer to use one file with all of the functions inside it because it feels more comfortable in that way. PS: In fact, we tried to create one file for each function but we kept having errors so we devided to avoid that.
+# We prefer to use one file with all of the functions inside it because it feels more comfortable in that way.
 import functions as funcs
 
 # 1. create folders
@@ -64,6 +61,7 @@ funcs.CoronaGif(MunCorGDF_normalized)
 
 #transform gif into a .mp4 video
 import moviepy.editor as mp
+print('Converting GIF into MP4...')
 clip = mp.VideoFileClip("./output/CoronaGif.gif")
 clip.write_videofile("./output/coronaevolution.mp4")
 

@@ -1,12 +1,4 @@
 #!/bin/bash
-#install get geoscripting environment
-git clone https://github.com/GeoScripting-WUR/InstallLinuxScript.git
-cd InstallLinuxScript/user
-chmod u+x ./install.sh
-./install.sh
-
-cd
-
 #install ffmpeg
 sudo apt update
 sudo apt install ffmpeg
@@ -24,8 +16,11 @@ pip install imageio
 #install MoviePY
 pip install MoviePy
 
-cd
 
+#SCRIPT_PATH=$(dirname $(realpath -s $0))"/Project_Starter-Baguette-master/"
+#PATH=$PATH:$SCRIPT_PATH
+#export PATH
 
+python main.py
 
-
+ffplay ./output/bar_chart_race.mp4

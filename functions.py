@@ -9,9 +9,6 @@ def CombineMunCbs (munGDF, cbsDF):
     tempDF = cbsDF.groupby(['Municipality_code']).sum()
     tempDF['Municipality_code'] = tempDF.index
     tempDF = tempDF.drop(columns=['Total_reported', 'Hospital_admission', 'Deceased'])
-    
-    #tempDF.reset_index(drop=True, inplace=True)
-    #tempDF = pd.DataFrame(tempDF['Municipality_code'])
 
     days = cbsDF['Date_of_publication'].unique().tolist()
 
@@ -135,7 +132,7 @@ def Plotgif(MunCorGDF_normalized, date, index):
 def CoronaGif(MunCorGDF_normalized):
     import imageio
     import glob
-    print('Creating GIF of corona cases throughout the Netherlands from March to today...')
+    print("Creating PNG's of corona cases throughout the Netherlands from March to today...")
     
     for index, col_nb in enumerate(MunCorGDF_normalized.columns[30:]):
         #select each column one by one
@@ -144,6 +141,7 @@ def CoronaGif(MunCorGDF_normalized):
         Plotgif(MunCorGDF_normalized, date, index)
         print('finished with map '+ str(date))
         
+    print('Creating GIF...')
     out_gif = './output/CoronaGif.gif'
     images = []
     filenames = glob.glob('./data/png/*.png')
@@ -154,12 +152,11 @@ def CoronaGif(MunCorGDF_normalized):
         imageio.mimsave(out_gif, images, duration=0.2)
     except:
         print('No images to convert')
-    print('Gif is readyyyy')
     
     
 def MakeBarChart(corDF_poht, MunCorGDF):
     import bar_chart_race as bcr
-    print('Creating Bar Chart Race...')
+    print('Creating Bar Chart Race. This may take 5 Minutes...')
     df = corDF_poht.join(MunCorGDF['GM_NAAM'])
     df.set_index('GM_NAAM', inplace=True)
     df = df.T
