@@ -4,7 +4,10 @@ Geoscripting 2020
 - Team: Baguette (Hugo Poupard & Jochem 't Hart)
 - Date: 15-01-2021
 
-# RUN THIS PROJECT BY RUNNING MAIN.SH
+# RUN THIS PROJECT BY RUNNING:
+` chmod +x ./main.sh`
+
+` ./main.sh`
 
 ## Objective
 Showing the development of relative coronacases per inhabitant (normalization) in the Netherlands. Visualize it per city and apply some statistics to show interesting corona development trends. Do something like a city-ranking system. Show relative corona development for each municipality.
