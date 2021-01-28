@@ -10,6 +10,7 @@ import requests
 import zipfile
 import geopandas as gpd
 import pandas as pd
+import moviepy.editor as mp
 # We prefer to use one file with all of the functions inside it because it feels more comfortable in that way.
 import functions as funcs
 
@@ -62,7 +63,6 @@ funcs.Visualization(MunCorGDF_normalized)
 funcs.CoronaGif(MunCorGDF_normalized)
 
 #transform gif into a .mp4 video
-import moviepy.editor as mp
 print('Converting GIF into MP4...')
 clip = mp.VideoFileClip("./output/CoronaGif.gif")
 clip.write_videofile("./output/coronaevolution.mp4")
