@@ -4,7 +4,7 @@ Geoscripting 2020
 - Team: Baguette (Hugo Poupard & Jochem 't Hart)
 - Date: 15-01-2021
 
-# RUN THIS PROJECT BY RUNNING:
+# RUN THIS PROJECT BY RUNNING THE FOLLOWING CODE IN A NEW TERMINAL OPENED IN THE PROJECT FOLDER:
 ` chmod +x ./main.sh`
 
 ` ./main.sh`
