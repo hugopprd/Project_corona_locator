@@ -6,8 +6,10 @@
 
 import os
 import sys
-#os.chdir(sys.path[0]+r'/Project')
-#print(os.getcwd())
+# =============================================================================
+# os.chdir(sys.path[0]+r'/Project')
+# print(os.getcwd())
+# =============================================================================
 import requests
 import zipfile
 import geopandas as gpd
@@ -54,97 +56,83 @@ corDF_normalized = MunCorGDF.loc[:, '2020-03-05':].div(MunCorGDF['AANT_INW'], ax
 MunCorGDF_normalized = MunCorGDF.loc[:, :'geometry'].join(corDF_normalized)
 funcs.Visualization(MunCorGDF_normalized)
 
-#bonus step
-#create a gif that shows evolution of corona cases through a map
-# Drop on-line courses
-import os
-import shutil
-import time
 
-import folium
-import imageio
-import webbrowser
-import zipfile
-import json
-import fileinput
 
-import numpy as np
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
 
-from os import path
-from branca.colormap import linear
-#from selenium import webdriver
-from PIL import Image
-from pathlib import Path
-# Keeping only 'CO_MUNICIPIO' and 'DT_INICIO_FUNCIONAMENTO'
-last_date = MunCorGDF_ready.columns[-31]
-MunCorGDF_gifmap = MunCorGDF_ready.loc[:, '2020-03-05': last_date]
-MunCorGDF_gifmap = MunCorGDF_gifmap.join(MunCorGDF_ready.iloc[:, -1], rsuffix='j')
-# Creating new var with foundation year for each course
-# Checking nan values
 
-sns.heatmap(MunCorGDF_gifmap.isnull(), 
-            yticklabels=False, 
-            cbar=False, 
-            cmap='viridis'
-           )
 
-# Dropping nan values 
+def gif(MunCorGDF_normalized, date):
+    import folium
+# =============================================================================
+   # import selenium
+    from selenium import webdriver
+#     import time
+# =============================================================================
+    import io
+    from PIL import Image
 
-MunCorGDF_gifmap.dropna(inplace=True)
+#     driver = webdriver.Firefox(executable_path='./geckodriver-0.29.0')
+#     driver.get('http://inventwithpython.com')
+    #create map
+    coronamap = folium.Map([52.2130, 5.2794],
+                 zoom_start=8,
+                 tiles='cartodbpositron')
+    # folium.TileLayer('openstreetmap',name="Light Map",control=False).add_to(coronamap)
+    municipality_bord = MunCorGDF_normalized.to_crs(epsg='4326')
 
-# Float to Int
+    # get the name of the last updated
 
-MunCorGDF_gifmap = MunCorGDF_gifmap.astype(int)
-MunCorGDF_gifmap_json = MunCorGDF_gifmap.to_json()
+    #setting a measurement scale and create a layer
+    scale = (municipality_bord[date].quantile((0,0.25,0.75,1))).tolist()
+    coronamap.choropleth(municipality_bord, data=municipality_bord,                      
+                     columns=['GM_NAAM', date],
+                     key_on='feature.properties.GM_NAAM', 
+                     fill_color = 'YlOrRd',
+                     threshold_scale=scale, 
+                     fill_opacity=0.7,
+                     line_opacity=0.2, legend_name='Number of new corona cases per 100.000 in the last 24h')
 
-for i in range(1808,2019,10):
+    folium.LayerControl().add_to(coronamap)
+    #save map / From here I need to save as html and then make a screenshot of the map 
+    map_output_html = './output/'+str(date)+'.html'
+    map_output_png = './output/'+str(date)+'.png'
+    #save as html
+    coronamap.save(map_output_html)
+    #code that didnt work because of that error ->  WebDriverException: 'geckodriver' executable needs to be in PATH. 
+# =============================================================================
+    img_data = coronamap._to_png(5)
+    img = Image.open(io.BytesIO(img_data))
+    img.save(map_output_png)
+# =============================================================================
+# other code which work but png file is white because I need to add some delay 
+# for the browser to open and display the map before it makes the screenshot and that I don't know how to do
+# =============================================================================
+#     import os
+#     import subprocess
+#     import time
+#     url = "file://{}/"+str(map_output_html).format(os.getcwd())
+#     outfn = os.path.join(map_output_png)
+#     subprocess.check_call(["cutycapt","--url={}".format(url), "--out={}".format(outfn)])
+# =============================================================================
+    os.remove('./output/'+ str(date) + '.html')
+
+    print('Map ' + date + ' saved in output folder bro')
+
+def CoronaGif(MunCorGDF_normalized):
+    col_nb = len(MunCorGDF_normalized.columns[30:])
+    for i in range(col_nb):
+        #select each column one by one
+        date = MunCorGDF_normalized.columns[30+i]
+        #launch function that creates maps and store them as png
+        gif(MunCorGDF_normalized, date)
+        print('finished with map '+ str(date))
     
-    # Gen a new df with total courses in each decade per municipality. This df is transformed into a dict
-    total_perYear = courses[courses['FOUNDATION_YEAR'] <= i]
-    total_perYear.drop('FOUNDATION_YEAR', axis=1, inplace=True)
-    total_perYear['COUNT'] = 1
-    total_perYear['CO_MUNICIPIO'] = total_perYear['CO_MUNICIPIO'].astype(str)   
-    total_perYear = total_perYear.groupby('CO_MUNICIPIO')['COUNT'].sum()
-    total_perYear = np.log(total_perYear) + 1
-    total_perYear = total_perYear.to_dict()
+CoronaGif(MunCorGDF_normalized)
     
-    # Add municipalities keys with 0 courses at the giving year
-    for j in cd_municipios:
-        if j in  total_perYear.keys():
-            continue
-        else: 
-             total_perYear[str(j)] = 0
     
-    # Create a folium map centered in Brazil
-    m_i = folium.Map(width=500, height=500,
-               location=[-15.77972, -54.92972], 
-               zoom_start=4,
-               tiles='cartodbpositron')
     
-    # Add year label to the map
-    title_html = '''
-                 <h3 align="left" style="font-size:22px"><b>{}</b></h3>
-                 '''.format('Year: ' + str(i))   
-    m_i.get_root().html.add_child(folium.Element(title_html))
-    
-    # Plot colors to the map using json geographical borders, and total courses from total_perYear dict
-    folium.GeoJson(
-        geo_json_data,
-        style_function=lambda feature: {
-            'fillColor': colormap(total_perYear[feature['properties']['id']]),
-            'color': 'darkred',
-            'weight': 0.5,
-            'lineColor': 'white',
-            'stroke' : False
-        } 
-    ).add_to(m_i)
 
-    
-    m_i.save('GifMap/total_perYear_' + str(i) + '.html')
-
+    #count how many columns with '2020-...-...
 # 8. City ranking 
 # https://www.youtube.com/watch?v=qThD1InmsuI
 # https://github.com/dexplo/bar_chart_race
