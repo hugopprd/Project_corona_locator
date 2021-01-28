@@ -118,7 +118,7 @@ def Visualization(MunCorGDF_normalized):
                     style=("background-color: white; color: #333333; font-family: arial; font-size: 12px; padding: 10px;") 
                     )
             )
-
+    #combine everything together
     coronamap.add_child(NIL)
     coronamap.keep_in_front(NIL)
     folium.LayerControl().add_to(coronamap)
@@ -129,11 +129,16 @@ def Visualization(MunCorGDF_normalized):
     
 def Plotgif(MunCorGDF_normalized, date, index):
     import matplotlib.pyplot as plt
+    #create a plot
     fig, ax = plt.subplots(1, figsize=(6, 10))
+    #create a map
     MunCorGDF_normalized.plot(column=date, k=4, cmap='YlOrRd', ax=ax)
+    #create a title
     ax.set_title(date, fontdict={'fontsize': '25', 'fontweight' : '3'})
     ax.set_axis_off()
+    #save the plot as png
     plt.savefig('data/png/'+str(index)+'.png')
+    #clear memory to avoid crash
     plt.close()
     fig.clf()
 
@@ -152,10 +157,12 @@ def CoronaGif(MunCorGDF_normalized):
         print('finished with map '+ str(date))
         
     print('Creating GIF...')
+    #creating variables
     out_gif = './output/CoronaGif.gif'
     images = []
     filenames = glob.glob('./data/png/*.png')
     filenames.sort(key = lambda f: int(f[11:-4])) 
+    #creating gif
     for filename in filenames:
         images.append(imageio.imread(filename))
     try:
