@@ -13,6 +13,7 @@ import requests
 import zipfile
 import geopandas as gpd
 import pandas as pd
+# We prefer to use one file with all of the functions inside it because it feels more comfortable in that way. PS: In fact, we tried to create one file for each function but we kept having errors so we devided to avoid that.
 import functions as funcs
 
 # 1. create folders
