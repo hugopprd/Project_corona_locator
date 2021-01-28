@@ -18,7 +18,7 @@ import functions as funcs
 
 # 1. create folders
 if not os.path.exists('data'): os.mkdir('data')
-if not os.path.exists('png'): os.mkdir('data/png')
+if not os.path.exists('data/png'): os.mkdir('data/png')
 if not os.path.exists('output'): os.mkdir('output')
 
 # 2. Download RIVM csv and municipalities with population
