@@ -5,6 +5,7 @@
 # Date: 29-01-2021
 
 def CombineMunCbs (munGDF, cbsDF):
+    print('Calculating new Corona cases per day per municipality...')
     tempDF = cbsDF.groupby(['Municipality_code']).sum()
     tempDF['Municipality_code'] = tempDF.index
     tempDF = tempDF.drop(columns=['Total_reported', 'Hospital_admission', 'Deceased'])
@@ -34,9 +35,12 @@ def CombineMunCbs (munGDF, cbsDF):
     
     return corDF
     
+
 def DataPreProcessing(municipality_data, corona_data):
     import pandas as pd
     import geopandas as gpd
+    print('Adding corona data to municipality GeoDataFrame...')
+    
     # dropping water areas
     munGDF_upd = municipality_data[municipality_data["H2O"] == "NEE"]
     #join table
@@ -50,8 +54,11 @@ def DataPreProcessing(municipality_data, corona_data):
     MunCorGDF.to_csv(r'./data/coronapermun.csv')   
     return MunCorGDF
 
+
 def Visualization(MunCorGDF_normalized):
     import folium
+    print('Creating Folium map...')
+    
     #create map
     coronamap = folium.Map([52.2130, 5.2794],
                  zoom_start=8,
@@ -70,7 +77,7 @@ def Visualization(MunCorGDF_normalized):
                      fill_color = 'YlOrRd',
                      threshold_scale=scale, 
                      fill_opacity=0.7,
-                     line_opacity=0.2, legend_name='Number of new corona cases per 100.000 in the last 24h')
+                     line_opacity=0.2, legend_name='Percentage of population infected with COVID-19 today')
 
     #create a highlight function
     style_function = lambda x: {'fillColor': '#ffffff', 
@@ -95,7 +102,7 @@ def Visualization(MunCorGDF_normalized):
                             'P_45_64_JR', 
                             'P_65_EO_JR'],
                     aliases=['Municipality: ', 
-                             'Number of new corona cases per 100.000 inhabitants in the last 24h', 
+                             'Percentage of population infected with COVID-19 today', 
                              '% of 0yo to 14yo', 
                              '% of 15yo to 24yo', 
                              '% of 25yo to 44yo', 
@@ -111,9 +118,8 @@ def Visualization(MunCorGDF_normalized):
     #save map
     coronamap.save('./output/CoronaMap.html')
     print('Map saved in output folder bro')
+   
     
-
-
 def Plotgif(MunCorGDF_normalized, date, index):
     import matplotlib.pyplot as plt
     fig, ax = plt.subplots(1, figsize=(6, 10))
@@ -129,6 +135,8 @@ def Plotgif(MunCorGDF_normalized, date, index):
 def CoronaGif(MunCorGDF_normalized):
     import imageio
     import glob
+    print('Creating GIF of corona cases throughout the Netherlands from March to today...')
+    
     for index, col_nb in enumerate(MunCorGDF_normalized.columns[30:]):
         #select each column one by one
         date = col_nb
@@ -147,11 +155,12 @@ def CoronaGif(MunCorGDF_normalized):
     except:
         print('No images to convert')
     print('Gif is readyyyy')
-        
-        
-def MakeBarChart(corDF_normalized, MunCorGDF):
+    
+    
+def MakeBarChart(corDF_poht, MunCorGDF):
     import bar_chart_race as bcr
-    df = corDF_normalized.join(MunCorGDF['GM_NAAM'])
+    print('Creating Bar Chart Race...')
+    df = corDF_poht.join(MunCorGDF['GM_NAAM'])
     df.set_index('GM_NAAM', inplace=True)
     df = df.T
     df = df.rename_axis(None,axis=1).rename_axis('date')
@@ -161,13 +170,7 @@ def MakeBarChart(corDF_normalized, MunCorGDF):
     bcr.bar_chart_race(df=df,
                           filename='./output/bar_chart_race.mp4',
                           n_bars=20,
-                          #steps_per_period=7,
-                          #period_length=500,
                           interpolate_period=False,
-                          #sort='asc',
-                          title='Total COVID-19 Cases per 100.000 Inhabitants',
-                          period_fmt='%B %d, %Y',
-                          period_summary_func=lambda v, r: {'x': .99, 'y': .18,
-                                      's': f'Total: {v.nlargest(6).sum():,.0f}',
-                                      'ha': 'right', 'size': 8, 'family': 'Courier New'}
+                          title='Number of People per 10.000 That Have Been Infected With COVID-19'
                           )
+    
