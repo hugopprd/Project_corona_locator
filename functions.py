@@ -70,7 +70,7 @@ def Visualization(MunCorGDF_normalized):
     coronamap = folium.Map([52.2130, 5.2794],
                  zoom_start=8,
                  tiles='cartodbpositron')
-    # folium.TileLayer('openstreetmap',name="Light Map",control=False).add_to(coronamap)
+    # set CRS
     municipality_bord = MunCorGDF_normalized.to_crs(epsg='4326')
 
     # get the name of the last updated
