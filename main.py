@@ -22,10 +22,12 @@ if not os.path.exists('output'): os.mkdir('output')
 url_cbs = 'https://www.cbs.nl/-/media/cbs/dossiers/nederland-regionaal/wijk-en-buurtstatistieken/wijkbuurtkaart_2020_v1.zip'
 url_rivm = 'https://data.rivm.nl/covid-19/COVID-19_aantallen_gemeente_per_dag.csv'
 
+# Specify paths
 path_cbs_zip = './data/municipality.zip'
 mun_loc = './data/gemeente_2020_v1.shp'
 rivm_loc = './data/corona.csv'
 
+# Download files and unzip
 if not os.path.exists(path_cbs_zip):
     with requests.get(url_cbs)as r:
         print('Downloading CBS Municipality Data...')
@@ -66,6 +68,5 @@ clip = mp.VideoFileClip("./output/CoronaGif.gif")
 clip.write_videofile("./output/coronaevolution.mp4")
 
 # 8. City ranking 
-# https://www.youtube.com/watch?v=qThD1InmsuI
-# https://github.com/dexplo/bar_chart_race
+# More info about this library: https://github.com/dexplo/bar_chart_race
 funcs.MakeBarChart(corDF_poht, MunCorGDF)
