@@ -21,6 +21,9 @@ pip install bar_chart_race
 #install image.io
 pip install imageio
 
+#install MoviePY
+pip install MoviePy
+
 cd
 
 
