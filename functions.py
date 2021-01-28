@@ -6,28 +6,38 @@
 
 def CombineMunCbs (munGDF, cbsDF):
     print('Calculating new Corona cases per day per municipality...')
+    # Get a DF of all municipality codes as a base to add other dataframes to
     tempDF = cbsDF.groupby(['Municipality_code']).sum()
+    # Make municipality codes as index
     tempDF['Municipality_code'] = tempDF.index
     tempDF = tempDF.drop(columns=['Total_reported', 'Hospital_admission', 'Deceased'])
-
+    
+    # Create a list of unique days to loop through
     days = cbsDF['Date_of_publication'].unique().tolist()
-
+    
+    # Loop through each day and get the new coronacases from that date and add it to a new column in the municipality dataframe
     for day in days:
+        # Get the cases for each municipality on this day
         dayDF = cbsDF[cbsDF['Date_of_publication'] == day]
+        # Make municipality code the index to use for join later on.
         dayDF.set_index('Municipality_code', inplace=True)
+        # Take the sum of cases if a municipality code is mentioned twice on each day
         dayDF = dayDF.groupby(dayDF.index).sum()
         dayDF = dayDF.rename(columns={'Total_reported': ''})
         dayDF = dayDF['']
+        # Join cases per municipality to the big dataset
         tempDF = tempDF.join(dayDF, rsuffix=day)
 
     corDF = tempDF.drop(columns=[''])
     
+    # Take the average of the sum of the last 7 days. This way, there won't be large spikes after the weekend or low numbers during the weekends.
     for day in days[7:]:
         index = days.index(day)
         corDF[day + '_sum'] = (corDF.iloc[:, index-7:index].sum(axis=1)) / 7
         
     corDF = corDF.drop(columns=['Municipality_code'])
     corDF = corDF.loc[:,'2020-03-05_sum':]
+    # Change column name
     corDF.columns = corDF.columns.str.replace('_sum','')
     
     return corDF
@@ -157,13 +167,18 @@ def CoronaGif(MunCorGDF_normalized):
 def MakeBarChart(corDF_poht, MunCorGDF):
     import bar_chart_race as bcr
     print('Creating Bar Chart Race. This may take 5 Minutes...')
+    # Get the municipality names
     df = corDF_poht.join(MunCorGDF['GM_NAAM'])
+    # Use municipality name as index instead of municipality code
     df.set_index('GM_NAAM', inplace=True)
+    # Transform to get a wide dataset instead of long
     df = df.T
     df = df.rename_axis(None,axis=1).rename_axis('date')
+    # Convert to int, because the bar_char_race function takes int and not float. Also change data to cumulative instead of new cases.
     df = df.cumsum().astype(int)
     df = df.iloc[:, :-1]
-
+    
+    # Create bar chart race
     bcr.bar_chart_race(df=df,
                           filename='./output/bar_chart_race.mp4',
                           n_bars=20,
