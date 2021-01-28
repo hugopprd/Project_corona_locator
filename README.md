@@ -5,7 +5,7 @@ Geoscripting 2020
 - Date: 15-01-2021
 
 ## Objective
-Showing the development of relative coronacases per inhabitant (normalization) in the Netherlands. Visualize it per city and apply some statistics to show interesting corona development trends. Do something like a city-ranking system.
+Showing the development of relative coronacases per inhabitant (normalization) in the Netherlands. Visualize it per city and apply some statistics to show interesting corona development trends. Do something like a city-ranking system. Show relative corona development for each municipality.
 
 ## Datasets
 **Corona cases table**
@@ -25,7 +25,13 @@ Showing the development of relative coronacases per inhabitant (normalization) i
 - geopandas
 - pandas
 - leaflet
-- ggplot2
+- sys
+- moviepy.editor
+- folium
+- matplotlib.pyplot
+- glob
+- imageio
+- bar_chart_race
 
 **Steps**
 - create folders (data, output)
@@ -35,7 +41,6 @@ Showing the development of relative coronacases per inhabitant (normalization) i
 - add coronacase data to shapefile (~300 columns of each day corona cases)
 - add corona death data to shapefile as a seperate file (no priority)
 - normalize cases for inhabitants
-- visualization
-- animation from march to now in a raster
-- graph from march to now
-- city ranking animation.
+- visualization of the last corona update with an interactive map
+- animation from the first corona case to now as a video
+- normalized corona cases city ranking animation.
