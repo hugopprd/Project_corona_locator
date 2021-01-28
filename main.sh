@@ -21,17 +21,6 @@ pip install bar_chart_race
 #install image.io
 pip install imageio
 
-#install selenium
-pip install -U selenium
-
-#install geckodriver
-wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
-tar -xvzf geckodriver*
-chmod +x geckodriver
-
-#install cutycapt
-sudo apt-get install -y cutycapt
-
 cd
 
 
