@@ -120,7 +120,7 @@ def Plotgif(MunCorGDF_normalized, date, index):
     MunCorGDF_normalized.plot(column=date, k=4, cmap='YlOrRd', ax=ax)
     ax.set_title(date, fontdict={'fontsize': '25', 'fontweight' : '3'})
     ax.set_axis_off()
-    plt.savefig('output/'+str(index)+'.png')
+    plt.savefig('data/png/'+str(index)+'.png')
     plt.close()
     fig.clf()
 
@@ -138,14 +138,15 @@ def CoronaGif(MunCorGDF_normalized):
         
     out_gif = './output/CoronaGif.gif'
     images = []
-    filenames = glob.glob('./output/*.png')
-    filenames.sort(key = lambda f: int(f[9:-4])) 
+    filenames = glob.glob('./data/png/*.png')
+    filenames.sort(key = lambda f: int(f[11:-4])) 
     for filename in filenames:
         images.append(imageio.imread(filename))
     try:
         imageio.mimsave(out_gif, images, duration=0.2)
     except:
         print('No images to convert')
+    print('Gif is readyyyy')
         
         
 def MakeBarChart(corDF_normalized, MunCorGDF):

@@ -21,6 +21,7 @@ import functions as funcs
 # 1. create folders
 if not os.path.exists('data'): os.mkdir('data')
 if not os.path.exists('output'): os.mkdir('output')
+if not os.path.exists('png'): os.mkdir('data/png')
 
 # 2. Download RIVM csv and municipalities with population
 url_cbs = 'https://www.cbs.nl/-/media/cbs/dossiers/nederland-regionaal/wijk-en-buurtstatistieken/wijkbuurtkaart_2020_v1.zip'
@@ -61,7 +62,11 @@ funcs.Visualization(MunCorGDF_normalized)
 #creating a gif
 funcs.CoronaGif(MunCorGDF_normalized)
 
-    
+#transform gif into a .mp4 video
+import moviepy.editor as mp
+clip = mp.VideoFileClip("./output/CoronaGif.gif")
+clip.write_videofile("./output/coronaevolution.mp4")
+
 # =============================================================================
     
 
