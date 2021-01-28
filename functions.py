@@ -112,6 +112,42 @@ def Visualization(MunCorGDF_normalized):
     coronamap.save('./output/CoronaMap.html')
     print('Map saved in output folder bro')
     
+
+
+def Plotgif(MunCorGDF_normalized, date, index):
+    import matplotlib.pyplot as plt
+    fig, ax = plt.subplots(1, figsize=(6, 10))
+    MunCorGDF_normalized.plot(column=date, k=4, cmap='YlOrRd', ax=ax)
+    ax.set_title(date, fontdict={'fontsize': '25', 'fontweight' : '3'})
+    ax.set_axis_off()
+    plt.savefig('output/'+str(index)+'.png')
+    plt.close()
+    fig.clf()
+
+
+
+def CoronaGif(MunCorGDF_normalized):
+    import imageio
+    import glob
+    for index, col_nb in enumerate(MunCorGDF_normalized.columns[30:]):
+        #select each column one by one
+        date = col_nb
+        #launch function that creates maps and store them as png
+        Plotgif(MunCorGDF_normalized, date, index)
+        print('finished with map '+ str(date))
+        
+    out_gif = './output/CoronaGif.gif'
+    images = []
+    filenames = glob.glob('./output/*.png')
+    filenames.sort(key = lambda f: int(f[9:-4])) 
+    for filename in filenames:
+        images.append(imageio.imread(filename))
+    try:
+        imageio.mimsave(out_gif, images, duration=0.2)
+    except:
+        print('No images to convert')
+        
+        
 def MakeBarChart(corDF_normalized, MunCorGDF):
     import bar_chart_race as bcr
     df = corDF_normalized.join(MunCorGDF['GM_NAAM'])
