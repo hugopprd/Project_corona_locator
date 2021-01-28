@@ -9,6 +9,9 @@ Geoscripting 2020
 
 ` ./main.sh`
 
+**After the program is finish working, each output will popup after one another. You will need to close one output to see the other one pop.**
+# Have a Good visualization ! - Baguette Team
+
 ## Objective
 Showing the development of relative coronacases per inhabitant (normalization) in the Netherlands. Visualize it per city and apply some statistics to show interesting corona development trends. Do something like a city-ranking system. Show relative corona development for each municipality.
 
